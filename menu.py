@@ -43,9 +43,16 @@ Domyślna lista łączy wynosi 100 i potrwa do 15 sekund czy podnieść / zmniej
             self.userScanInput = int(input("Podaj liczbę łączy: \n"))
             self.scanArray.scan(self.userScanInput)
             print("\n")
-        else:
+        elif self.userEntryInput == "2" or self.userEntryInput.lower().capitalize() == "Nie":
             self.scanArray.scan()
             print("\n")
+        else:
+            print("Nie ma takiego wyboru. Wybierz numer lub odpowiedź.")
+            print("\n")
+            Menu()
+            return
+            
+
 
         while True:
             self.MenuInput = input("""Witaj w Menu!

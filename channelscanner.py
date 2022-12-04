@@ -103,6 +103,10 @@ class ChannelScanner() :
                 self.date_question()
         elif self.userInputDate == "2" or self.userInputDate.lower().capitalize() == "Nie":
             self.today = date.today()
+        else:
+            print("Nie ma takiego wyboru")
+            return self.date_question()
+
 
 
     def check_channel(self) -> None:
@@ -114,10 +118,14 @@ class ChannelScanner() :
         Returns:
             None"""
         self.userInputChannel = input("Podaj program, który Cię interesuje: ")
-        self.selectedProgram = requests.get(f"https://tv.gazeta.pl/program_tv/0,110298,8700474,,,{self.today},3,{self.channelHolder.get(self.userInputChannel)},0.html").text
-        self.soup2 = BeautifulSoup(self.selectedProgram, "lxml")
-        self.programHistory = self.soup2.find_all("li", {"class" : ['even', 'odd']})
-        print(f"Oto Aktualne dane na dzień {self.today}")
+        if self.userInputChannel in self.channelHolder :
+            self.selectedProgram = requests.get(f"https://tv.gazeta.pl/program_tv/0,110298,8700474,,,{self.today},3,{self.channelHolder.get(self.userInputChannel)},0.html").text
+            self.soup2 = BeautifulSoup(self.selectedProgram, "lxml")
+            self.programHistory = self.soup2.find_all("li", {"class" : ['even', 'odd']})
+            print(f"Oto Aktualne dane na dzień {self.today}")
+        else:
+            print("Taki program nie istnieje bądź nie został zeskanowany")
+            return self.check_channel()
         
         for data in self.programHistory:
             self.programHeader = data.find("a").text
@@ -151,12 +159,12 @@ class ChannelScanner() :
         self.programHistory = self.soup2.find_all("li", {"class" : ['even', 'odd']})
         print(f"Zapisuje {self.userInputChannel} z dnia {self.today}")
         for data in self.programHistory:
-            self.programHeader = {"tytuł" : data.find("a").text}
-            self.programType = {"typ" : data.find("p").text}
-            self.programTime = {"czas" : data.find("div", class_ = 'time').text + f" [{self.today}]"}
-            self.programDescription = {"opis" : data.find_all("p")[1].text.replace("\n", "").strip()}
-            self.programLink = {"link" : "https://tv.gazeta.pl/"+ data.a["href"].replace("\n", "")}
+            self.programData = {"tytuł" : data.find("a").text, 
+            "typ" : data.find("p").text, 
+            "czas" : data.find("div", class_ = 'time').text + f" [{self.today}]", 
+            "opis" : data.find_all("p")[1].text.replace("\n", "").strip(), 
+            "link" : "https://tv.gazeta.pl/"+ data.a["href"].replace("\n", "")}
             
-            self.programList.append([self.programHeader, self.programType, self.programTime, self.programDescription, self.programLink])
+            self.programList.append(self.programData)
             with open(f"program_data.json", "w+") as f:
                 json.dump(self.programList, f, indent = 1)
