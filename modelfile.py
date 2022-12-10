@@ -41,7 +41,7 @@ class RequestHttp():
         if http.status_code == 200:
             return http.text
         elif http.status_code == 404:
-            print("Website Error or Check URL in Function")
+            print("Website Error or check URL in Function")
 
 class ProgramContainer(RequestHttp) :
     """NAME
