@@ -15,9 +15,6 @@ class RequestHttp():
                 Checks site status_code
                 return http.text for specific day.
 
-            requests(self, requests_number (int, optional), day (RRRR-MM-DD, optional))
-                Send multiple requests to site.
-                return http.text generator for specific day.
 
         DATA DESCRIPTORS
             __init__
@@ -45,26 +42,6 @@ class RequestHttp():
             return http.text
         elif http.status_code == 404:
             print("Website Error or Check URL in Function")
-
-    def requests (self, requests_number = 20, day = date.today()) :
-        """Send multiple requests to site. Checks site status_code
-
-        Args:
-            requests_number (int, optional): Number of requests to send. Defaults to 20.
-            day (RRRR-MM-DD, optional): Sets date for function. Defaults to date.today().
-
-        Returns:
-            generator : Returns generator with html.text for each request
-            string: If site doesn't work (status_code 404)
-        """
-        channelId = 0
-        while channelId != requests_number :
-            channelId = channelId + 1
-            http = requests.get(f"https://tv.gazeta.pl/program_tv/0,110298,8700474,,,{day},3,{channelId},0.html")
-            if http.status_code == 200:
-                yield http.text
-            elif http.status_code == 404:
-                print("Website Error or Check URL in Function")
 
 class ProgramContainer(RequestHttp) :
     """NAME
@@ -120,11 +97,12 @@ class ProgramContainer(RequestHttp) :
         Returns:
             dict: Returns Program Dictionary
         """
-        loop = 1
-        for data in self.requests(requests_number = amount) :
+        loop = 0
+        while loop != amount :
+            loop = loop + 1
+            data = self.request(loop)
             soup = BeautifulSoup(data, "lxml")
             soupdata = soup.find("div", class_ = f"station station[{loop}]")
-            loop = loop + 1
             scannedSoup = self.find_html_programId(soupdata)
             try:
                 self.channelHolder[scannedSoup[0]] = scannedSoup[1]
