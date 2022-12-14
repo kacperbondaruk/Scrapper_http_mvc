@@ -1,6 +1,5 @@
 from datetime import date
 import re
-from urllib import request
 from modelfile import ProgramContainer
 from view import View
 
