@@ -76,6 +76,9 @@ class ProgramContainer(RequestHttp) :
 
         Args:
             http (object): HTTP data for scan
+            
+        Errors:
+            AttributeError (pass) if http doesn't have program
 
         Returns:
             object: Returns Program Name and Program ID
@@ -92,14 +95,17 @@ class ProgramContainer(RequestHttp) :
         """Saves Programs from requests to dictionary
 
         Args:
-            amount (int, optional): Amount of channels to save. Defaults to 1.
+            amount (int, optional): Amount of channels to save. Defaults to 1
+            
+        Errors:
+            TypeError (pass) if http doesn't have program
 
         Returns:
             dict: Returns Program Dictionary
         """
         loop = 0
         while loop != amount :
-            loop = loop + 1
+            loop += 1
             data = self.request(loop)
             soup = BeautifulSoup(data, "lxml")
             soupdata = soup.find("div", class_ = f"station station[{loop}]")
@@ -129,6 +135,6 @@ class ProgramContainer(RequestHttp) :
             soupdata = soup.find_all("li", {"class" : ['even', 'odd']})
             return soupdata
         else:
-            return "Channel doesn't exist or it wasn't scanned"
+            return "Channel wasn't Scanned"
 
 
